@@ -1,52 +1,56 @@
 import express from "express";
-import {registerController, loginController, testController, forgotPasswordController, updateProfileController, getOrdersController, getAllOrdersController, orderStatusController} from '../controllers/authController.js'
-import { isAdmin, requireSignIn } from "../middlewares/authMiddlewares.js";
+import {
+  registerController,
+  loginController,
+  testController,
+  forgotPasswordController,
+  updateProfileController,
+  getOrdersController,
+  getAllOrdersController,
+  orderStatusController,
+} from "../controllers/authController.js";
+import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
+
 //router object
-const router = express.Router()
+const router = express.Router();
 
 //routing
 //REGISTER || METHOD POST
-router.post('/register',registerController)
+router.post("/register", registerController);
 
-//login || POST
-router.post('/login',loginController)
+//LOGIN || POST
+router.post("/login", loginController);
 
+//Forgot Password || POST
+router.post("/forgot-password", forgotPasswordController);
 
-// Forget Password || POST
-router.post('/forgot-password', forgotPasswordController)
+//test routes
+router.get("/test", requireSignIn, isAdmin, testController);
 
+//protected User route auth
+router.get("/user-auth", requireSignIn, (req, res) => {
+  res.status(200).send({ ok: true });
+});
+//protected Admin route auth
+router.get("/admin-auth", requireSignIn, isAdmin, (req, res) => {
+  res.status(200).send({ ok: true });
+});
 
-//test routes dummy
-router.get('/test', requireSignIn, isAdmin ,testController)
+//update profile
+router.put("/profile", requireSignIn, updateProfileController);
 
+//orders
+router.get("/orders", requireSignIn, getOrdersController);
 
-//protected route auth - user
-router.get('/user-auth',requireSignIn, (req, res)=>{
-    res.status(200).send({ok:true})
-}
-
-)
-//protected route auth - Admin
-router.get('/admin-auth',requireSignIn, isAdmin, (req, res)=>{
-    res.status(200).send({ok:true})
-})
-
-
-//update Profile
-router.put('/profile', requireSignIn, updateProfileController)
-
-
-// orders
-router.get('/orders', requireSignIn, getOrdersController)
-
-// all Orders
-router.get('/all-orders', requireSignIn,isAdmin , getAllOrdersController)
-
+//all orders
+router.get("/all-orders", requireSignIn, isAdmin, getAllOrdersController);
 
 // order status update
-router.put("/order-status/:orderId", requireSignIn, isAdmin, orderStatusController);
+router.put(
+  "/order-status/:orderId",
+  requireSignIn,
+  isAdmin,
+  orderStatusController
+);
 
-
-export default router
-
-
+export default router;
